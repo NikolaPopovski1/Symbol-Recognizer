@@ -1,0 +1,28 @@
+﻿<Window x:Class="SymbolRecogniser.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SymbolRecogniser"
+        mc:Ignorable="d"
+        Title="MainWindow" MinHeight="480" MinWidth="900" MaxHeight="500" MaxWidth="1000">
+    <DockPanel>
+        <Border DockPanel.Dock="Right" BorderBrush="Black" BorderThickness="1" Width="600" Height="400" Margin="20">
+            <Canvas Name="MyCanvas" 
+            Background="White" 
+            MouseDown="Canvas_MouseDown" 
+            MouseMove="Canvas_MouseMove" 
+            MouseUp="Canvas_MouseUp"/>
+        </Border>
+
+        <StackPanel DockPanel.Dock="Left" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20, 20, 0, 20" MinWidth="180">
+            <Label Content="Symbol recogniser" HorizontalAlignment="Center" FontSize="24" FontFamily="Bahnschrift SemiBold Condensed" />
+            <WrapPanel HorizontalAlignment="Center" Margin="0 0 0 10">
+                <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="47"  Margin="0 0 10 0"/>
+                <Button Content="Save symbol" HorizontalAlignment="Left" Width="93" />
+            </WrapPanel>
+            <Button Content="Start learning" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10"/>
+            <Button Content="Recognise symbol" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10"/>
+        </StackPanel>
+    </DockPanel>
+</Window>
