@@ -16,13 +16,14 @@
         </Border>
 
         <StackPanel DockPanel.Dock="Left" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20, 20, 0, 20" MinWidth="180">
-            <Label Content="Symbol recogniser" HorizontalAlignment="Center" FontSize="24" FontFamily="Bahnschrift SemiBold Condensed" />
+            <Label Content="Symbol recognizer" HorizontalAlignment="Center" FontSize="24" FontFamily="Bahnschrift SemiBold Condensed" />
             <WrapPanel HorizontalAlignment="Center" Margin="0 0 0 10">
-                <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="47"  Margin="0 0 10 0"/>
-                <Button Content="Save symbol" HorizontalAlignment="Left" Width="93" />
+                <TextBox Name="TextBoxSymbol" VerticalAlignment="Center" TextWrapping="Wrap" Text="" Width="47" Margin="0 0 10 0" TextChanged="TextBox_TextChanged"/>
+                <Button Name="ButtonSaveSymbol" Content="Save symbol" Width="93" Click="ButtonSaveSymbol_Click" />
             </WrapPanel>
-            <Button Content="Start learning" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10"/>
-            <Button Content="Recognise symbol" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10"/>
+            <Button Name="ButtonClearCanvas" Content="Clear canvas" HorizontalAlignment="Center" Width="150" Margin="0 0 0 30" Click="ButtonClearCanvas_Click"/>
+            <Button Name="ButtonStartLearning" Content="Start learning" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10"/>
+            <Button Name="ButtonRecogniseSymbol" Content="Recognise symbol" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10"/>
         </StackPanel>
     </DockPanel>
 </Window>
