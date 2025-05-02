@@ -16,7 +16,6 @@ namespace SymbolRecogniser
         [NotNull] private List<Point> _currentStroke;
         private CharsNCorrespondingDrawings listOfSymbolCharNDrawings = new CharsNCorrespondingDrawings();
 
-        private int[] layers;
         private MultiLayerNetwork network;
 
 
@@ -127,8 +126,7 @@ namespace SymbolRecogniser
             {
                 MessageBox.Show("Learning process started.");
 
-                layers = new int[] { Parameters.INPUT_LAYER_SIZE, Parameters.HIDDEN_LAYER_SIZE, Parameters.SECOND_HIDDEN_LAYER_SIZE, listOfSymbolCharNDrawings.SymbolCount };
-                network = new MultiLayerNetwork(layers);
+                network = new MultiLayerNetwork(listOfSymbolCharNDrawings.SymbolCount, listOfSymbolCharNDrawings);
 
                 MessageBox.Show("Learning process finished.");
                 return;

@@ -12,7 +12,7 @@ namespace SymbolRecogniser.NeuralNetwork
         [NotNull] private bool _isOutputLayer;
         private Layer _nextLayer;
 
-        public Layer(int neuronsInLayer, int neuronsInNextLayer, Layer nextLayer, bool isInputLayer = false, bool isOutputLayer = false)
+        public Layer(int neuronsInLayer, int neuronsInNextLayer, Layer nextLayer = null, bool isInputLayer = false, bool isOutputLayer = false)
         {
             _neuronsInNextLayer = neuronsInNextLayer;
 
@@ -40,25 +40,9 @@ namespace SymbolRecogniser.NeuralNetwork
 
 
 
-        public void InitInputLayer(List<Point> vectors)
+        public void SetNextLayer(Layer nextLayer)
         {
-            if (!_isInputLayer)
-            {
-                throw new Exception("Layer is not input layer.");
-            }
-            if (vectors.Count != _neuronsInLayer)
-            {
-                throw new Exception("Number of vectors does not match number of neurons in layer.");
-            }
-            if (_neuronsInLayer % 2 != 0)
-            {
-                throw new Exception("Number of neurons in layer is not even.");
-            }
-            for (int i = 0; i < _neuronsInLayer; i += 2)
-            {
-                _neurons[i].Output = vectors[i].X;
-                _neurons[i + 1].Output = vectors[i].Y;
-            }
+            _nextLayer = nextLayer;
         }
         public void FeedForward()
         {
