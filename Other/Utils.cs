@@ -12,5 +12,17 @@ namespace SymbolRecogniser.Other
         {
             return new Point((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
         }
+        // random number between min and max
+        public static double RandomWeight(int min, int max)
+        {
+            Random random = new Random();
+            return random.NextDouble() * (max - min) + min;
+        }
+        // random double between min and max
+        public static double GetRandomDouble(double min, double max)
+        {
+            Random random = new Random();
+            return random.NextDouble() * (max - min) + min;
+        }
     }
 }

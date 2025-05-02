@@ -1,12 +1,12 @@
-﻿using System.Windows;
-using SymbolRecogniser.Other;
+﻿using SymbolRecogniser.Other;
+using System.Windows;
 
 namespace SymbolRecogniser.NeuralNetwork
 {
     public class SymbolCharNDrawings
     {
         private char _symbol = ' ';
-        private List<List<Point>> _drawings = new List<List<Point>>();
+        private List<List<Point>> _drawing = new List<List<Point>>(); // lahko bi naredil z arrayem, da bi se znebil overheada ampak mi je zmanjkalo časa
 
         public SymbolCharNDrawings(char symbol)
         {
@@ -22,7 +22,7 @@ namespace SymbolRecogniser.NeuralNetwork
             {
                 return false;
             }
-            _drawings.Add(drawing);
+            _drawing.Add(drawing);
             return true;
         }
         /*
@@ -81,10 +81,10 @@ namespace SymbolRecogniser.NeuralNetwork
             get { return _symbol; }
             set { _symbol = value; }
         }
-        public List<List<Point>> Drawings
+        public List<List<Point>> Drawing
         {
-            get { return _drawings; }
-            set { _drawings = value; }
+            get { return _drawing; }
+            set { _drawing = value; }
         }
     }
 }

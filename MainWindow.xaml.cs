@@ -14,13 +14,10 @@ namespace SymbolRecogniser
         [NotNull] private Point _lastPoint;
         public List<List<Point>> Strokes { get; private set; } = new List<List<Point>>();
         [NotNull] private List<Point> _currentStroke;
-        private List<SymbolCharNDrawings> _listOfSymbolCharNDrawings = new List<SymbolCharNDrawings>();
+        private CharsNCorrespondingDrawings listOfSymbolCharNDrawings = new CharsNCorrespondingDrawings();
 
-        public List<SymbolCharNDrawings> ListOfSymbolCharNDrawings
-        {
-            get { return _listOfSymbolCharNDrawings; }
-            set { _listOfSymbolCharNDrawings = value; }
-        }
+        private int[] layers;
+        private MultiLayerNetwork network;
 
 
 
@@ -98,22 +95,43 @@ namespace SymbolRecogniser
             }
             else
             {
-                SymbolCharNDrawings symbolCharNDrawings = new SymbolCharNDrawings(TextBoxSymbol.Text[0]);
                 System.Collections.Generic.List<Point> oneStroke = new List<Point>();
                 foreach (var stroke in Strokes) oneStroke.AddRange(stroke);
 
-                if (!symbolCharNDrawings.AddDrawing(oneStroke))
+                if (listOfSymbolCharNDrawings.Add(oneStroke, TextBoxSymbol.Text[0]))
                 {
-                    MessageBox.Show("Drawing is too small.");
-                    return;
+                    MessageBox.Show($"Symbol '{TextBoxSymbol.Text[0]}' saved successfully.");
+                    MyCanvas.Children.Clear();
+                    Strokes.Clear();
                 }
                 else
                 {
-                    ListOfSymbolCharNDrawings.Add(symbolCharNDrawings);
-                    MessageBox.Show($"Symbol '{TextBoxSymbol.Text[0]}' saved successfully.");
+                    MessageBox.Show("Drawing is too small.");
                 }
-                MyCanvas.Children.Clear();
-                Strokes.Clear();
+            }
+        }
+
+        private void ButtonStartLearning_Click(object sender, RoutedEventArgs e)
+        {
+            if (listOfSymbolCharNDrawings.SymbolCount < Parameters.MIN_OUTPUT_LAYER_COUNT)
+            {
+                MessageBox.Show("Please save at least six different symbols before starting learning.");
+                return;
+            }
+            else if (listOfSymbolCharNDrawings.SymbolCount > Parameters.MAX_OUTPUT_LAYER_COUNT)
+            {
+                MessageBox.Show($"Please save less than {Parameters.MAX_OUTPUT_LAYER_COUNT + 1} different symbols before starting learning.");
+                return;
+            }
+            else
+            {
+                MessageBox.Show("Learning process started.");
+
+                layers = new int[] { Parameters.INPUT_LAYER_SIZE, Parameters.HIDDEN_LAYER_SIZE, Parameters.SECOND_HIDDEN_LAYER_SIZE, listOfSymbolCharNDrawings.SymbolCount };
+                network = new MultiLayerNetwork(layers);
+
+                MessageBox.Show("Learning process finished.");
+                return;
             }
         }
     }
