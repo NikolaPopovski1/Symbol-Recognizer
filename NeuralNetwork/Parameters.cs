@@ -7,7 +7,7 @@
         public const int SECOND_HIDDEN_LAYER_SIZE = FIRST_HIDDEN_LAYER_SIZE / 2; // why not?
         public const int NUM_OF_POINTS = 128; // reduction to num of points aka. vectors
         public const int INPUT_LAYER_SIZE = NUM_OF_POINTS * 2; // two times NUM_OF_POINTS because of x and y coordinates
-        public const int MIN_OUTPUT_LAYER_COUNT = 6; // minimum number of different symbols to start learning
+        public const int MIN_OUTPUT_LAYER_COUNT = 3; // minimum number of different symbols to start learning
         public const int MAX_OUTPUT_LAYER_COUNT = 128; // minimum number of different symbols to start learning
 
         public const int MIN_RANDOM_WEIGHT = -100; // random weight range

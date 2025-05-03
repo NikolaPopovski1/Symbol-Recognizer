@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="480" MinWidth="900" MaxHeight="500" MaxWidth="1000">
     <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20, 20, 0, 20" MinWidth="180">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20, 20, 12, 20" MinWidth="180">
             <Label Content="Symbol recognizer" HorizontalAlignment="Center" FontSize="24" FontFamily="Bahnschrift SemiBold Condensed" />
             <WrapPanel HorizontalAlignment="Center" Margin="0 0 0 10">
                 <TextBox Name="TextBoxSymbol" VerticalAlignment="Center" TextWrapping="Wrap" Text="" Width="47" Margin="0 0 10 0" TextChanged="TextBox_TextChanged"/>
@@ -15,6 +15,7 @@
             </WrapPanel>
             <Button Name="ButtonClearCanvas" Content="Clear canvas" HorizontalAlignment="Center" Width="150" Margin="0 0 0 30" Click="ButtonClearCanvas_Click"/>
             <Button Name="ButtonStartLearning" Content="Start learning" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10" Click="ButtonStartLearning_Click"/>
+            <Button Name="ButtonStopLearning" Content="Stop learning"  HorizontalAlignment="Center" Width="150" Margin="0 0 0 30" Click="ButtonStopLearning_Click" />
             <Button Name="ButtonRecogniseSymbol" Content="Recognise symbol" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10"/>
         </StackPanel>
         
@@ -27,10 +28,12 @@
         </Border>
 
         <StackPanel VerticalAlignment="Center" Margin="20, 20, 20, 20" MinWidth="180">
-            <Label Content="Log" HorizontalAlignment="Center" FontSize="24" FontFamily="Bahnschrift SemiBold Condensed" />
-            <ScrollViewer Height="270" VerticalScrollBarVisibility="Auto">
-                <TextBlock Name="LogTextBlock" TextWrapping="Wrap" />
-            </ScrollViewer>
+            <Label Content="Log" HorizontalAlignment="Center" FontSize="16" FontFamily="Bahnschrift SemiLight Condensed" />
+            <Border BorderBrush="DarkGray" BorderThickness="2">
+                <ScrollViewer Name="LogScrollViewer" Height="270" VerticalScrollBarVisibility="Auto" >
+                    <TextBlock Name="LogTextBlock" TextWrapping="Wrap" Width="156" />
+                </ScrollViewer>
+            </Border>
         </StackPanel>
     </WrapPanel>
 </Window>

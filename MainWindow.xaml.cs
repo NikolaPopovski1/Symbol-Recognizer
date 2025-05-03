@@ -15,16 +15,17 @@ namespace SymbolRecogniser
         public List<List<Point>> Strokes { get; private set; } = new List<List<Point>>();
         [NotNull] private List<Point> _currentStroke;
         private CharsNCorrespondingDrawings listOfSymbolCharNDrawings = new CharsNCorrespondingDrawings();
-
         private MultiLayerNetwork network;
-
-
+        private CancellationTokenSource _cts;
 
         public MainWindow()
         {
             InitializeComponent();
-            network = new MultiLayerNetwork(listOfSymbolCharNDrawings.SymbolCount, listOfSymbolCharNDrawings, LogTextBlock);
+            network = new MultiLayerNetwork(listOfSymbolCharNDrawings.SymbolCount, listOfSymbolCharNDrawings, LogTextBlock, LogScrollViewer);
         }
+
+
+
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -111,7 +112,7 @@ namespace SymbolRecogniser
             }
         }
 
-        private void ButtonStartLearning_Click(object sender, RoutedEventArgs e)
+        private async void ButtonStartLearning_Click(object sender, RoutedEventArgs e)
         {
             if (listOfSymbolCharNDrawings.SymbolCount < Parameters.MIN_OUTPUT_LAYER_COUNT)
             {
@@ -125,14 +126,32 @@ namespace SymbolRecogniser
             }
             else
             {
-                MessageBox.Show("Learning process started.");
+                _cts = new CancellationTokenSource();
+                CancellationToken token = _cts.Token;
+
+                LogTextBlock.Text = "Learning process started...\n";
+                LogScrollViewer.ScrollToEnd();
 
                 network.PrepareForTraining(listOfSymbolCharNDrawings);
-                network.TrainNetwork();
+                try
+                {
+                    await Task.Run(() => network.TrainNetwork(token), token);
+                }
+                catch (OperationCanceledException)
+                {
+                    LogTextBlock.Text += "Training cancelled.\n";
+                    LogScrollViewer.ScrollToEnd();
+                }
 
-                MessageBox.Show("Learning process finished.");
+                LogTextBlock.Text += "Learning process finished.\n";
+                LogScrollViewer.ScrollToEnd();
                 return;
             }
+        }
+
+        private void ButtonStopLearning_Click(object sender, RoutedEventArgs e)
+        {
+            _cts?.Cancel();
         }
     }
 }

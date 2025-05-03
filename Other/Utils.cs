@@ -46,11 +46,11 @@ namespace SymbolRecogniser.Other
             for (int i = 0; i < result.Length; i++)
             {
                 result[i] = Math.Exp(values[i] - max);
-                sum += values[i];
+                sum += result[i];
             }
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] /= sum;
+                result[i] = Math.Exp(result[i]) / sum;
             }
             return result;
         }

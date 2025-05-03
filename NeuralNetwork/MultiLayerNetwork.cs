@@ -10,8 +10,9 @@ namespace SymbolRecogniser.NeuralNetwork
         private Layer[] _layers;
         private CharsNCorrespondingDrawings _listOfCharsNDrawings;
         private TextBlock _logTextBlock;
+        private ScrollViewer _logScrollViewer;
 
-        public MultiLayerNetwork(int outputLayerCount, CharsNCorrespondingDrawings listOfCharsNDrawings, TextBlock LogTextBlock)
+        public MultiLayerNetwork(int outputLayerCount, CharsNCorrespondingDrawings listOfCharsNDrawings, TextBlock LogTextBlock, ScrollViewer LogScrollViewer)
         {
             /*
              * neuronsInLayers[0] = input layer
@@ -25,6 +26,7 @@ namespace SymbolRecogniser.NeuralNetwork
             _layers = new Layer[Parameters.NUM_OF_LAYERS];
             _listOfCharsNDrawings = listOfCharsNDrawings;
             _logTextBlock = LogTextBlock;
+            _logScrollViewer = LogScrollViewer;
 
             _layers[0] = new Layer(Parameters.INPUT_LAYER_SIZE, Parameters.FIRST_HIDDEN_LAYER_SIZE, null, true);
             _layers[1] = new Layer(Parameters.FIRST_HIDDEN_LAYER_SIZE, Parameters.SECOND_HIDDEN_LAYER_SIZE);
@@ -46,10 +48,12 @@ namespace SymbolRecogniser.NeuralNetwork
             {
                 throw new Exception("Number of vectors does not match number of neurons in layer.");
             }
+            int v = 0;
             for (int i = 0; i < Parameters.INPUT_LAYER_SIZE; i += 2)
             {
-                _layers[0].Neurons[i].Output = vectors[i].X;
-                _layers[0].Neurons[i + 1].Output = vectors[i].Y;
+                v = i / 2;
+                _layers[0].Neurons[i].Output = vectors[v].X;
+                _layers[0].Neurons[i + 1].Output = vectors[v].Y;
             }
         }
         private bool ChangeOutputLayerCount(int newOutputLayerCount)
@@ -73,7 +77,7 @@ namespace SymbolRecogniser.NeuralNetwork
             _listOfCharsNDrawings = listOfCharsNDrawings;
             ChangeOutputLayerCount(_listOfCharsNDrawings.SymbolCount);
         }
-        public void TrainNetwork()
+        public void TrainNetwork(CancellationToken token)
         {
             int[] drawingsPassedTrhough = new int[_listOfCharsNDrawings.SymbolCount];
             bool[] symbolsPassedTrhough = new bool[_listOfCharsNDrawings.SymbolCount];
@@ -88,6 +92,16 @@ namespace SymbolRecogniser.NeuralNetwork
             // training loop
             for (int i = 0; i < Parameters.EPOCHS; i++)
             {
+                if (token.IsCancellationRequested)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        _logTextBlock.Text += "Training cancelled.\n";
+                        _logScrollViewer.ScrollToEnd();
+                    });
+                    return;
+                }
+
                 // init or reset all variables
                 for (int j = 0; j < _listOfCharsNDrawings.SymbolCount; j++)
                 {
@@ -100,6 +114,7 @@ namespace SymbolRecogniser.NeuralNetwork
                 }
                 allSymbolDrawingsPassed = 0;
 
+                bool allDrawingsPassed = false;
                 // randomly go through the drawings
                 while (allSymbolDrawingsPassed < _listOfCharsNDrawings.SymbolCount)
                 {
@@ -107,13 +122,19 @@ namespace SymbolRecogniser.NeuralNetwork
                     int j;
                     do
                     {
-                        j = Utils.RandomNumber(0, _listOfCharsNDrawings.SymbolCount);
+                        j = Utils.RandomNumber(0, _listOfCharsNDrawings.SymbolCount - 1);
+                        if (allSymbolDrawingsPassed > _listOfCharsNDrawings.SymbolCount)
+                        {
+                            allDrawingsPassed = true;
+                            break;
+                        }
                         if (drawingsPassedTrhough[j] >= _listOfCharsNDrawings.List[j].DrawingsCount)
                         {
+                            if (symbolsPassedTrhough[j]) allSymbolDrawingsPassed++;
                             symbolsPassedTrhough[j] = true;
-                            allSymbolDrawingsPassed++;
                         }
                     } while (symbolsPassedTrhough[j]);
+                    if (allDrawingsPassed) break;
 
                     // feed forward (between layers)
                     for (int k = 0; k < _layers.Length; k++)
@@ -131,14 +152,23 @@ namespace SymbolRecogniser.NeuralNetwork
                     // calculate error
 
                     // set expected values and output values
-                    outputValues[j] = 1;
-                    foreach (Neuron neuron in _layers[_layers.Length - 1].Neurons)outputValues[j] = neuron.Output;
+                    expectedValues[j] = 1;
+                    foreach (Neuron neuron in _layers[_layers.Length - 1].Neurons) outputValues[j] = neuron.Output;
                     averageError += Utils.CategoricalCrossEntropy(expectedValues, Utils.Softmax(outputValues));
-
+                    expectedValues[j] = 0;
+                    foreach (Neuron neuron in _layers[_layers.Length - 1].Neurons) outputValues[j] = 0;
                 }
-
-                _logTextBlock.Text += $"Epoch {i + 1} - Average error: {averageError / _listOfCharsNDrawings.DrawingsCount}\n";
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    _logTextBlock.Text += $"Epoch {i + 1} - Average error: {averageError / _listOfCharsNDrawings.DrawingsCount}\n";
+                    _logScrollViewer.ScrollToEnd();
+                });
             }
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                _logTextBlock.Text += "Finished learning.\n";
+                _logScrollViewer.ScrollToEnd();
+            });
         }
     }
 }
