@@ -24,5 +24,48 @@ namespace SymbolRecogniser.Other
             Random random = new Random();
             return random.NextDouble() * (max - min) + min;
         }
+
+        public static double Sigmoid(double x)
+        {
+            return 1 / (1 + Math.Exp(-x));
+        }
+
+        // random int between min and max
+        public static int RandomNumber(int min, int max)
+        {
+            Random random = new Random();
+            return random.Next(min, max);
+        }
+
+        // softmax function
+        public static double[] Softmax(double[] values)
+        {
+            double max = values.Max();
+            double sum = 0;
+            double[] result = new double[values.Length];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = Math.Exp(values[i] - max);
+                sum += values[i];
+            }
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] /= sum;
+            }
+            return result;
+        }
+
+        // categorical cross entropy loss
+        public static double CategoricalCrossEntropy(double[] expectedValues, double[] outputValues)
+        {
+            for (int i = 0; i < outputValues.Length; i++)
+            {
+                if (expectedValues[i] == 1)
+                {
+                    return -Math.Log(outputValues[i]);
+                }
+            }
+            throw new Exception("No expected value is 1");
+        }
     }
 }

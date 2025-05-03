@@ -23,6 +23,18 @@ namespace SymbolRecogniser.NeuralNetwork
         {
             get { return _listOfSymbolCharNDrawings.Count; }
         }
+        public int DrawingsCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (SymbolCharNDrawings symbolCharNDrawings in _listOfSymbolCharNDrawings)
+                {
+                    count += symbolCharNDrawings.DrawingsCount;
+                }
+                return count;
+            }
+        }
         public bool Add(List<Point> drawing, char symbol)
         {
             if (Contains(symbol))

@@ -12,11 +12,28 @@ namespace SymbolRecogniser.NeuralNetwork
         {
             _symbol = symbol;
         }
+        public char Symbol
+        {
+            get { return _symbol; }
+            set { _symbol = value; }
+        }
+        public List<List<Point>> Drawings
+        {
+            get { return _drawing; }
+            set { _drawing = value; }
+        }
+        public int DrawingsCount
+        {
+            get { return _drawing.Count; }
+        }
+
+
+
         public bool AddDrawing(List<Point> drawing)
         {
             if (drawing.Count > Parameters.NUM_OF_POINTS)
             {
-                drawing = ReduceSize(drawing);
+                drawing = Normalize(ReduceSize(drawing));
             }
             else if (drawing.Count < Parameters.NUM_OF_POINTS)
             {
@@ -55,7 +72,7 @@ namespace SymbolRecogniser.NeuralNetwork
         {
             List<Point> result = new List<Point>(drawings);
             List<KeyValuePair<double, int>> distances = new List<KeyValuePair<double, int>>();
-            while (result.Count != Parameters.NUM_OF_POINTS)
+            while (result.Count != Parameters.NUM_OF_POINTS + 1)
             {
                 for (int i = 1; i < result.Count - 2; i++)
                 {
@@ -75,16 +92,20 @@ namespace SymbolRecogniser.NeuralNetwork
 
             return result;
         }
+        public List<Point> Normalize(List<Point> drawings)
+        {
+            List<Point> vectorInputs = new List<Point>();
+            for (int i = 0; i < Parameters.NUM_OF_POINTS; i++)
+            {
+                Vector v = drawings[i + 1] - drawings[i];
+                double length = v.Length;
 
-        public char Symbol
-        {
-            get { return _symbol; }
-            set { _symbol = value; }
-        }
-        public List<List<Point>> Drawing
-        {
-            get { return _drawing; }
-            set { _drawing = value; }
+                double normX = length > 0 ? v.X / length : 0;
+                double normY = length > 0 ? v.Y / length : 0;
+
+                vectorInputs.Add(new Point(normX, normY));
+            }
+            return vectorInputs;
         }
     }
 }

@@ -23,6 +23,7 @@ namespace SymbolRecogniser
         public MainWindow()
         {
             InitializeComponent();
+            network = new MultiLayerNetwork(listOfSymbolCharNDrawings.SymbolCount, listOfSymbolCharNDrawings, LogTextBlock);
         }
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -126,7 +127,8 @@ namespace SymbolRecogniser
             {
                 MessageBox.Show("Learning process started.");
 
-                network = new MultiLayerNetwork(listOfSymbolCharNDrawings.SymbolCount, listOfSymbolCharNDrawings);
+                network.PrepareForTraining(listOfSymbolCharNDrawings);
+                network.TrainNetwork();
 
                 MessageBox.Show("Learning process finished.");
                 return;

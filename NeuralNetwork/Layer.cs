@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using SymbolRecogniser.Other;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 namespace SymbolRecogniser.NeuralNetwork
@@ -56,7 +57,10 @@ namespace SymbolRecogniser.NeuralNetwork
                 {
                     result += _neurons[j].Output * _neurons[j].Weights[i];
                 }
-                _nextLayer.Neurons[i].Output = result + _nextLayer.Neurons[i].Bias;
+                result += _nextLayer.Neurons[i].Bias;
+                result = Utils.Sigmoid(result);
+
+                _nextLayer.Neurons[i].Output = result;
             }
         }
     }

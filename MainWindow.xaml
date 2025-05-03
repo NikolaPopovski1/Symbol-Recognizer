@@ -6,16 +6,8 @@
         xmlns:local="clr-namespace:SymbolRecogniser"
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="480" MinWidth="900" MaxHeight="500" MaxWidth="1000">
-    <DockPanel>
-        <Border DockPanel.Dock="Right" BorderBrush="Black" BorderThickness="1" Width="600" Height="400" Margin="20">
-            <Canvas Name="MyCanvas" 
-            Background="White" 
-            MouseDown="Canvas_MouseDown" 
-            MouseMove="Canvas_MouseMove" 
-            MouseUp="Canvas_MouseUp"/>
-        </Border>
-
-        <StackPanel DockPanel.Dock="Left" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20, 20, 0, 20" MinWidth="180">
+    <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20, 20, 0, 20" MinWidth="180">
             <Label Content="Symbol recognizer" HorizontalAlignment="Center" FontSize="24" FontFamily="Bahnschrift SemiBold Condensed" />
             <WrapPanel HorizontalAlignment="Center" Margin="0 0 0 10">
                 <TextBox Name="TextBoxSymbol" VerticalAlignment="Center" TextWrapping="Wrap" Text="" Width="47" Margin="0 0 10 0" TextChanged="TextBox_TextChanged"/>
@@ -25,5 +17,20 @@
             <Button Name="ButtonStartLearning" Content="Start learning" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10" Click="ButtonStartLearning_Click"/>
             <Button Name="ButtonRecogniseSymbol" Content="Recognise symbol" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10"/>
         </StackPanel>
-    </DockPanel>
+        
+        <Border BorderBrush="Black" BorderThickness="2" Width="400" Height="400">
+            <Canvas Name="MyCanvas" 
+            Background="White" 
+            MouseDown="Canvas_MouseDown" 
+            MouseMove="Canvas_MouseMove" 
+            MouseUp="Canvas_MouseUp" Margin="-1,-1,-1,-1"/>
+        </Border>
+
+        <StackPanel VerticalAlignment="Center" Margin="20, 20, 20, 20" MinWidth="180">
+            <Label Content="Log" HorizontalAlignment="Center" FontSize="24" FontFamily="Bahnschrift SemiBold Condensed" />
+            <ScrollViewer Height="270" VerticalScrollBarVisibility="Auto">
+                <TextBlock Name="LogTextBlock" TextWrapping="Wrap" />
+            </ScrollViewer>
+        </StackPanel>
+    </WrapPanel>
 </Window>
