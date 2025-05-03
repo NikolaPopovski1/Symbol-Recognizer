@@ -1,6 +1,7 @@
 ﻿using SymbolRecogniser.Other;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.IO;
 
 namespace SymbolRecogniser.NeuralNetwork
 {
@@ -61,6 +62,34 @@ namespace SymbolRecogniser.NeuralNetwork
                 result = Utils.Sigmoid(result);
 
                 _nextLayer.Neurons[i].Output = result;
+            }
+        }
+        public void SaveLayer(StreamWriter writer)
+        {
+            writer.WriteLine(_neuronsInLayer);
+            writer.WriteLine(_neuronsInNextLayer);
+            for (int i = 0; i < _neuronsInLayer; i++)
+            {
+                for (int j = 0; j < _neuronsInNextLayer; j++)
+                {
+                    writer.WriteLine(_neurons[i].Weights[j]);
+                }
+                writer.WriteLine(_neurons[i].Bias);
+            }
+        }
+        public void LoadLayer(StreamReader reader)
+        {
+            _neuronsInLayer = int.Parse(reader.ReadLine());
+            _neuronsInNextLayer = int.Parse(reader.ReadLine());
+            _neurons = new Neuron[_neuronsInLayer];
+            for (int i = 0; i < _neuronsInLayer; i++)
+            {
+                _neurons[i] = new Neuron(_neuronsInNextLayer);
+                for (int j = 0; j < _neuronsInNextLayer; j++)
+                {
+                    _neurons[i].Weights[j] = double.Parse(reader.ReadLine());
+                }
+                _neurons[i].Bias = double.Parse(reader.ReadLine());
             }
         }
     }

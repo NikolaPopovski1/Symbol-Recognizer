@@ -1,4 +1,5 @@
 ﻿using SymbolRecogniser.Other;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -87,11 +88,12 @@ namespace SymbolRecogniser.NeuralNetwork
             double[] expectedValues = new double[_listOfCharsNDrawings.SymbolCount];
             double[] outputValues = new double[_listOfCharsNDrawings.SymbolCount];
 
-            double averageError = 0;
+            double averageError;
 
             // training loop
             for (int i = 0; i < Parameters.EPOCHS; i++)
             {
+                averageError = 0;
                 if (token.IsCancellationRequested)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
@@ -150,7 +152,6 @@ namespace SymbolRecogniser.NeuralNetwork
                     }
 
                     // calculate error
-
                     // set expected values and output values
                     expectedValues[j] = 1;
                     foreach (Neuron neuron in _layers[_layers.Length - 1].Neurons) outputValues[j] = neuron.Output;
@@ -169,6 +170,55 @@ namespace SymbolRecogniser.NeuralNetwork
                 _logTextBlock.Text += "Finished learning.\n";
                 _logScrollViewer.ScrollToEnd();
             });
+        }
+        public char RecogniseSymbol(List<Point> vectors)
+        {
+            if (_outputLayerCount < Parameters.MIN_OUTPUT_LAYER_COUNT || _outputLayerCount > Parameters.MAX_OUTPUT_LAYER_COUNT)
+            {
+                _logTextBlock.Text += "Not enough or too many symbols.\n";
+                return ' ';
+            }
+            if (vectors.Count != Parameters.NUM_OF_POINTS)
+            {
+                throw new Exception("Number of vectors does not match number of neurons in layer.");
+            }
+
+            FeedForwardInputLayer(vectors);
+            for (int i = 1; i < _layers.Length; i++)
+            {
+                _layers[i].FeedForward();
+            }
+            char[] chars = new char[_listOfCharsNDrawings.SymbolCount];
+            for (int j = 0; j < _listOfCharsNDrawings.SymbolCount; j++)
+            {
+                chars[j] = _listOfCharsNDrawings.List[j].Symbol;
+            }
+            double[] outputValues = new double[_listOfCharsNDrawings.SymbolCount];
+            for (int i = 0; i < _listOfCharsNDrawings.SymbolCount; i++)
+            {
+                outputValues[i] = _layers[_layers.Length - 1].Neurons[i].Output;
+            }
+            return Utils.GetCharFromArray(outputValues, chars);
+        }
+        public void LoadNetwork(string fileName)
+        {
+            using (StreamReader reader = new StreamReader(fileName))
+            {
+                for (int i = 0; i < _layers.Length; i++)
+                {
+                    _layers[i].LoadLayer(reader);
+                }
+            }
+        }
+        public void SaveNetwork(string fileName)
+        {
+            using (StreamWriter writer = new StreamWriter(fileName))
+            {
+                for (int i = 0; i < _layers.Length; i++)
+                {
+                    _layers[i].SaveLayer(writer);
+                }
+            }
         }
     }
 }

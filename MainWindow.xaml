@@ -16,7 +16,7 @@
             <Button Name="ButtonClearCanvas" Content="Clear canvas" HorizontalAlignment="Center" Width="150" Margin="0 0 0 30" Click="ButtonClearCanvas_Click"/>
             <Button Name="ButtonStartLearning" Content="Start learning" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10" Click="ButtonStartLearning_Click"/>
             <Button Name="ButtonStopLearning" Content="Stop learning"  HorizontalAlignment="Center" Width="150" Margin="0 0 0 30" Click="ButtonStopLearning_Click" />
-            <Button Name="ButtonRecogniseSymbol" Content="Recognise symbol" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10"/>
+            <Button Name="ButtonRecogniseSymbol" Content="Recognise symbol" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10" Click="ButtonRecogniseSymbol_Click"/>
         </StackPanel>
         
         <Border BorderBrush="Black" BorderThickness="2" Width="400" Height="400">

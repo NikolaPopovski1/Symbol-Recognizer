@@ -15,13 +15,16 @@ namespace SymbolRecogniser
         public List<List<Point>> Strokes { get; private set; } = new List<List<Point>>();
         [NotNull] private List<Point> _currentStroke;
         private CharsNCorrespondingDrawings listOfSymbolCharNDrawings = new CharsNCorrespondingDrawings();
+
         private MultiLayerNetwork network;
         private CancellationTokenSource _cts;
+        private SymbolCharNDrawings _predictionSymbolCharNDrawings;
 
         public MainWindow()
         {
             InitializeComponent();
             network = new MultiLayerNetwork(listOfSymbolCharNDrawings.SymbolCount, listOfSymbolCharNDrawings, LogTextBlock, LogScrollViewer);
+            _predictionSymbolCharNDrawings = new SymbolCharNDrawings(' ');
         }
 
 
@@ -152,6 +155,36 @@ namespace SymbolRecogniser
         private void ButtonStopLearning_Click(object sender, RoutedEventArgs e)
         {
             _cts?.Cancel();
+        }
+
+        private void ButtonRecogniseSymbol_Click(object sender, RoutedEventArgs e)
+        {
+            if (MyCanvas.Children.Count == 0)
+            {
+                MessageBox.Show("Please draw something before recognising.");
+                return;
+            }
+            else
+            {
+                System.Collections.Generic.List<Point> oneStroke = new List<Point>();
+                foreach (var stroke in Strokes) oneStroke.AddRange(stroke);
+
+                if (_predictionSymbolCharNDrawings.AddDrawing(oneStroke))
+                {
+                    char result = network.RecogniseSymbol(_predictionSymbolCharNDrawings.Drawings[0]);
+                    if (result == ' ')
+                        return;
+
+                    MessageBox.Show($"Perdicted symbol is: '{result}'");
+                    MyCanvas.Children.Clear();
+                    Strokes.Clear();
+                    _predictionSymbolCharNDrawings = new SymbolCharNDrawings(' ');
+                }
+                else
+                {
+                    MessageBox.Show("Drawing is too small.");
+                }
+            }
         }
     }
 }

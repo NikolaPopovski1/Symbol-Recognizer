@@ -67,5 +67,12 @@ namespace SymbolRecogniser.Other
             }
             throw new Exception("No expected value is 1");
         }
+
+        public static char GetCharFromArray(double[] outputValues, char[] chars)
+        {
+            double max = outputValues.Max();
+            int index = Array.IndexOf(outputValues, max);
+            return chars[index];
+        }
     }
 }

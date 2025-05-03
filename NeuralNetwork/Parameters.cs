@@ -16,7 +16,7 @@
         public const int MAX_RANDOM_BIAS = 100; // random bias range
 
         public const double LEARNING_RATE = 0.01;
-        public const int EPOCHS = 10000;
+        public const int EPOCHS = 1000;
         public const double MOMENTUM = 0.9;
         public const double REGULARIZATION_LAMBDA = 0.01;
     }

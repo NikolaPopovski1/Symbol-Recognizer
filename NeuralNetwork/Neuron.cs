@@ -28,6 +28,7 @@ namespace SymbolRecogniser.NeuralNetwork
         public double Bias
         {
             get { return _bias; }
+            set { _bias = value; }
         }
         /*public double Value
         {
