@@ -185,8 +185,9 @@ namespace SymbolRecogniser.NeuralNetwork
                         rawOutputs[n] = _layers[^1].Neurons[n].Output;
                     }
 
-                    // use softmax in error calculation
-                    averageError += Utils.CategoricalCrossEntropy(expectedValues, Utils.Softmax(rawOutputs));
+                    // accumulate squared error for each output neuron (used to calculate MSE)
+                    for (int n = 0; n < _outputLayerCount; n++)
+                        averageError += Math.Pow(expectedValues[n] - rawOutputs[n], 2);
 
                     // backpropagate
                     for (int k = _layers.Length - 1; k >= 0; k--)
@@ -237,9 +238,8 @@ namespace SymbolRecogniser.NeuralNetwork
             {
                 rawOutputValues[i] = _layers[_layers.Length - 1].Neurons[i].Output;
             }
-            double[] softmaxOutput = Utils.Softmax(rawOutputValues);
 
-            return Utils.GetCharFromArray(softmaxOutput, chars);
+            return Utils.GetCharFromArray(rawOutputValues, chars);
         }
     }
 }
