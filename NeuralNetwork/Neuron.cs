@@ -9,6 +9,7 @@ namespace SymbolRecogniser.NeuralNetwork
         [NotNull] private double _bias;
         //private double _value;
         private double _output;
+        private double _delta;
 
         public Neuron(int neuronsInNextLayer)
         {
@@ -39,6 +40,11 @@ namespace SymbolRecogniser.NeuralNetwork
         {
             get { return _output; }
             set { _output = value; }
+        }
+        public double Delta
+        {
+            get { return _delta; }
+            set { _delta = value; }
         }
     }
 }

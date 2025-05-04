@@ -29,14 +29,23 @@ namespace SymbolRecogniser.NeuralNetwork
             _logTextBlock = LogTextBlock;
             _logScrollViewer = LogScrollViewer;
 
-            _layers[0] = new Layer(Parameters.INPUT_LAYER_SIZE, Parameters.FIRST_HIDDEN_LAYER_SIZE, null, true);
-            _layers[1] = new Layer(Parameters.FIRST_HIDDEN_LAYER_SIZE, Parameters.SECOND_HIDDEN_LAYER_SIZE);
-            _layers[2] = new Layer(Parameters.SECOND_HIDDEN_LAYER_SIZE, outputLayerCount);
-            _layers[3] = new Layer(listOfCharsNDrawings.SymbolCount, 0, null, false, true);
+            _layers[0] = new Layer(Parameters.INPUT_LAYER_SIZE, Parameters.FIRST_HIDDEN_LAYER_SIZE, 0, null, null, true);
+
+            _layers[1] = new Layer(Parameters.FIRST_HIDDEN_LAYER_SIZE, outputLayerCount, listOfCharsNDrawings.SymbolCount);
+            _layers[2] = new Layer(listOfCharsNDrawings.SymbolCount, 0, Parameters.FIRST_HIDDEN_LAYER_SIZE, null, null, false, true);
+
+            //if there is a second hidden layer, uncomment the next lines and comment the lines above
+            //_layers[1] = new Layer(Parameters.FIRST_HIDDEN_LAYER_SIZE, Parameters.SECOND_HIDDEN_LAYER_SIZE);
+            //_layers[2] = new Layer(Parameters.SECOND_HIDDEN_LAYER_SIZE, outputLayerCount);
+            //_layers[3] = new Layer(listOfCharsNDrawings.SymbolCount, 0, null, false, true);
 
             _layers[0].SetNextLayer(_layers[1]);
             _layers[1].SetNextLayer(_layers[2]);
-            _layers[2].SetNextLayer(_layers[3]);
+            _layers[1].SetPreviousLayer(_layers[0]);
+            _layers[2].SetPreviousLayer(_layers[1]);
+
+            //if there is a second hidden layer, uncomment the next lines and comment the lines above
+            //_layers[2].SetNextLayer(_layers[3]);
 
             // for loop kjer uporabin FeedForwardInputLayer in ostale + backpropagation + ...
         }
@@ -56,6 +65,7 @@ namespace SymbolRecogniser.NeuralNetwork
                 _layers[0].Neurons[i].Output = vectors[v].X;
                 _layers[0].Neurons[i + 1].Output = vectors[v].Y;
             }
+            _layers[0].FeedForward();
         }
         private bool ChangeOutputLayerCount(int newOutputLayerCount)
         {
@@ -64,12 +74,20 @@ namespace SymbolRecogniser.NeuralNetwork
                 return false;
             }
             _outputLayerCount = newOutputLayerCount;
+            
+            _layers[1] = new Layer(Parameters.FIRST_HIDDEN_LAYER_SIZE, _outputLayerCount, _listOfCharsNDrawings.SymbolCount);
+            _layers[2] = new Layer(_listOfCharsNDrawings.SymbolCount, 0, Parameters.FIRST_HIDDEN_LAYER_SIZE, null, null, false, true);
 
-            _layers[2] = new Layer(Parameters.SECOND_HIDDEN_LAYER_SIZE, _outputLayerCount);
-            _layers[3] = new Layer(_outputLayerCount, 0, null, false, true);
+            //if there is a second hidden layer, uncomment the next lines and comment the lines above
+            //_layers[2] = new Layer(Parameters.SECOND_HIDDEN_LAYER_SIZE, _outputLayerCount);
+            //_layers[3] = new Layer(_outputLayerCount, 0, null, false, true);
 
+            _layers[0].SetNextLayer(_layers[1]);
             _layers[1].SetNextLayer(_layers[2]);
-            _layers[2].SetNextLayer(_layers[3]);
+            _layers[1].SetPreviousLayer(_layers[0]);
+            _layers[2].SetPreviousLayer(_layers[1]);
+            //if there is a second hidden layer, uncomment the next lines and comment the lines above
+            //_layers[2].SetNextLayer(_layers[3]);
 
             return true;
         }
@@ -154,16 +172,34 @@ namespace SymbolRecogniser.NeuralNetwork
                     // calculate error
                     // set expected values and output values
                     expectedValues[j] = 1;
-                    foreach (Neuron neuron in _layers[_layers.Length - 1].Neurons) outputValues[j] = neuron.Output;
+                    for (int n = 0; n < _layers[_layers.Length - 1].Neurons.Length; n++)
+                    {
+                        outputValues[n] = _layers[_layers.Length - 1].Neurons[n].Output;
+                    }
                     averageError += Utils.CategoricalCrossEntropy(expectedValues, Utils.Softmax(outputValues));
+
+                    // backpropagation
+                    for (int k = _layers.Length - 1; k >= 0; k--)
+                    {
+                        if (k == _layers.Length - 1)
+                        {
+                            _layers[k].BackPropagate(expectedValues);
+                        }
+                        else
+                        {
+                            _layers[k].BackPropagate(expectedValues);
+                        }
+                    }
+
                     expectedValues[j] = 0;
-                    foreach (Neuron neuron in _layers[_layers.Length - 1].Neurons) outputValues[j] = 0;
                 }
+                var err = averageError / _listOfCharsNDrawings.DrawingsCount;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _logTextBlock.Text += $"Epoch {i + 1} - Average error: {averageError / _listOfCharsNDrawings.DrawingsCount}\n";
+                    _logTextBlock.Text += $"Epoch {i + 1} - Average error: {err}\n";
                     _logScrollViewer.ScrollToEnd();
                 });
+                //if (err < 0.35) break;
             }
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -199,26 +235,6 @@ namespace SymbolRecogniser.NeuralNetwork
                 outputValues[i] = _layers[_layers.Length - 1].Neurons[i].Output;
             }
             return Utils.GetCharFromArray(outputValues, chars);
-        }
-        public void LoadNetwork(string fileName)
-        {
-            using (StreamReader reader = new StreamReader(fileName))
-            {
-                for (int i = 0; i < _layers.Length; i++)
-                {
-                    _layers[i].LoadLayer(reader);
-                }
-            }
-        }
-        public void SaveNetwork(string fileName)
-        {
-            using (StreamWriter writer = new StreamWriter(fileName))
-            {
-                for (int i = 0; i < _layers.Length; i++)
-                {
-                    _layers[i].SaveLayer(writer);
-                }
-            }
         }
     }
 }

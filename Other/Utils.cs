@@ -50,7 +50,7 @@ namespace SymbolRecogniser.Other
             }
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = Math.Exp(result[i]) / sum;
+                result[i] /= sum;
             }
             return result;
         }
@@ -73,6 +73,11 @@ namespace SymbolRecogniser.Other
             double max = outputValues.Max();
             int index = Array.IndexOf(outputValues, max);
             return chars[index];
+        }
+
+        public static double SigmoidDerivative(double x)
+        {
+            return x * (1 - x);
         }
     }
 }

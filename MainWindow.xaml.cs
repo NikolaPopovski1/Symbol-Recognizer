@@ -127,6 +127,11 @@ namespace SymbolRecogniser
                 MessageBox.Show($"Please save less than {Parameters.MAX_OUTPUT_LAYER_COUNT + 1} different symbols before starting learning.");
                 return;
             }
+            else if (_cts != null && !_cts.IsCancellationRequested)
+            {
+                MessageBox.Show("Learning process is already running.");
+                return;
+            }
             else
             {
                 _cts = new CancellationTokenSource();
@@ -173,7 +178,10 @@ namespace SymbolRecogniser
                 {
                     char result = network.RecogniseSymbol(_predictionSymbolCharNDrawings.Drawings[0]);
                     if (result == ' ')
+                    {
+                        _predictionSymbolCharNDrawings = new SymbolCharNDrawings(' ');
                         return;
+                    }
 
                     MessageBox.Show($"Perdicted symbol is: '{result}'");
                     MyCanvas.Children.Clear();

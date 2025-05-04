@@ -71,27 +71,26 @@ namespace SymbolRecogniser.NeuralNetwork
         public List<Point> ReduceSize(List<Point> drawings)
         {
             List<Point> result = new List<Point>(drawings);
-            List<KeyValuePair<double, int>> distances = new List<KeyValuePair<double, int>>();
             while (result.Count != Parameters.NUM_OF_POINTS + 1)
             {
-                for (int i = 1; i < result.Count - 2; i++)
+                List<KeyValuePair<double, int>> distances = new List<KeyValuePair<double, int>>();
+                for (int i = 1; i < result.Count - 1; i++)
                 {
                     distances.Add(new KeyValuePair<double, int>(Utils.Distance(result[i], result[i + 1]), i));
                 }
+
                 distances.Sort((x, y) => x.Key.CompareTo(y.Key));
 
                 int index = distances[0].Value;
 
                 Point newPoint = Utils.CenterVector(result[index], result[index + 1]);
                 result.RemoveAt(index);
-                result.RemoveAt(index + 1);
+                result.RemoveAt(index);
                 result.Insert(index, newPoint);
-
-                distances.Clear();
             }
-
             return result;
         }
+
         public List<Point> Normalize(List<Point> drawings)
         {
             List<Point> vectorInputs = new List<Point>();
