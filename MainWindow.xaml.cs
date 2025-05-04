@@ -194,5 +194,28 @@ namespace SymbolRecogniser
                 }
             }
         }
+
+        private void ButtonSaveLearningRate_Click(object sender, RoutedEventArgs e)
+        {
+            network.learningRate = double.Parse(TextBoxLearningRate.Text);
+            MessageBox.Show($"Learning rate set to {network.learningRate}");
+        }
+
+        private void TextBoxLearningRate_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // check if its a number
+            if (!double.TryParse(TextBoxLearningRate.Text, out double result))
+            {
+                MessageBox.Show("Please enter a valid number.");
+                TextBoxLearningRate.Text = "0.1";
+                TextBoxLearningRate.CaretIndex = TextBoxLearningRate.Text.Length;
+            }
+            else if (result < 0 || result > 1)
+            {
+                MessageBox.Show("Please enter a number between 0 and 1.");
+                TextBoxLearningRate.Text = "0.1";
+                TextBoxLearningRate.CaretIndex = TextBoxLearningRate.Text.Length;
+            }
+        }
     }
 }

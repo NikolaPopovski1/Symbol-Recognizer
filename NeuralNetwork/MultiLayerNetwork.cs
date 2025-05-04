@@ -12,6 +12,7 @@ namespace SymbolRecogniser.NeuralNetwork
         private CharsNCorrespondingDrawings _listOfCharsNDrawings;
         private TextBlock _logTextBlock;
         private ScrollViewer _logScrollViewer;
+        public double learningRate = Parameters.LEARNING_RATE;
 
         public MultiLayerNetwork(int outputLayerCount, CharsNCorrespondingDrawings listOfCharsNDrawings, TextBlock LogTextBlock, ScrollViewer LogScrollViewer)
         {
@@ -58,6 +59,10 @@ namespace SymbolRecogniser.NeuralNetwork
             {
                 throw new Exception("Number of vectors does not match number of neurons in layer.");
             }
+
+            for (int i = 0; i < _layers[0].Neurons.Length; i++)
+                _layers[0].Neurons[i].Output = 0;
+
             int v = 0;
             for (int i = 0; i < Parameters.INPUT_LAYER_SIZE; i += 2)
             {
@@ -142,7 +147,7 @@ namespace SymbolRecogniser.NeuralNetwork
                     int j;
                     do
                     {
-                        j = Utils.RandomNumber(0, _listOfCharsNDrawings.SymbolCount - 1);
+                        j = Utils.RandomNumber(0, _listOfCharsNDrawings.SymbolCount);
                         if (allSymbolDrawingsPassed > _listOfCharsNDrawings.SymbolCount)
                         {
                             allDrawingsPassed = true;
@@ -170,28 +175,24 @@ namespace SymbolRecogniser.NeuralNetwork
                     }
 
                     // calculate error
-                    // set expected values and output values
+                    expectedValues = new double[_outputLayerCount];
                     expectedValues[j] = 1;
-                    for (int n = 0; n < _layers[_layers.Length - 1].Neurons.Length; n++)
-                    {
-                        outputValues[n] = _layers[_layers.Length - 1].Neurons[n].Output;
-                    }
-                    averageError += Utils.CategoricalCrossEntropy(expectedValues, Utils.Softmax(outputValues));
 
-                    // backpropagation
+                    // get raw outputs
+                    double[] rawOutputs = new double[_outputLayerCount];
+                    for (int n = 0; n < _outputLayerCount; n++)
+                    {
+                        rawOutputs[n] = _layers[^1].Neurons[n].Output;
+                    }
+
+                    // use softmax in error calculation
+                    averageError += Utils.CategoricalCrossEntropy(expectedValues, Utils.Softmax(rawOutputs));
+
+                    // backpropagate
                     for (int k = _layers.Length - 1; k >= 0; k--)
                     {
-                        if (k == _layers.Length - 1)
-                        {
-                            _layers[k].BackPropagate(expectedValues);
-                        }
-                        else
-                        {
-                            _layers[k].BackPropagate(expectedValues);
-                        }
+                        _layers[k].BackPropagate(expectedValues);
                     }
-
-                    expectedValues[j] = 0;
                 }
                 var err = averageError / _listOfCharsNDrawings.DrawingsCount;
                 Application.Current.Dispatcher.Invoke(() =>
@@ -224,17 +225,21 @@ namespace SymbolRecogniser.NeuralNetwork
             {
                 _layers[i].FeedForward();
             }
+
             char[] chars = new char[_listOfCharsNDrawings.SymbolCount];
             for (int j = 0; j < _listOfCharsNDrawings.SymbolCount; j++)
             {
                 chars[j] = _listOfCharsNDrawings.List[j].Symbol;
             }
-            double[] outputValues = new double[_listOfCharsNDrawings.SymbolCount];
-            for (int i = 0; i < _listOfCharsNDrawings.SymbolCount; i++)
+
+            double[] rawOutputValues = new double[_outputLayerCount];
+            for (int i = 0; i < _outputLayerCount; i++)
             {
-                outputValues[i] = _layers[_layers.Length - 1].Neurons[i].Output;
+                rawOutputValues[i] = _layers[_layers.Length - 1].Neurons[i].Output;
             }
-            return Utils.GetCharFromArray(outputValues, chars);
+            double[] softmaxOutput = Utils.Softmax(rawOutputValues);
+
+            return Utils.GetCharFromArray(softmaxOutput, chars);
         }
     }
 }

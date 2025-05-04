@@ -74,17 +74,13 @@ namespace SymbolRecogniser.NeuralNetwork
         }
         public void BackPropagate(double[] expectedOutput = null)
         {
-            if (!_isOutputLayer)
+            if (_isOutputLayer)
             {
                 for (int i = 0; i < _neuronsInLayer; i++)
                 {
                     Neuron neuron = _neurons[i];
-                    for (int j = 0; j < neuron.Weights.Length; j++)
-                    {
-                        // update weights going from this neuron to the next layer
-                        neuron.Weights[j] += Parameters.LEARNING_RATE * _nextLayer._neurons[j].Delta * neuron.Output;
-                    }
-                    neuron.Bias += Parameters.LEARNING_RATE * neuron.Delta;
+                    double error = expectedOutput[i] - neuron.Output;
+                    neuron.Delta = error * Utils.SigmoidDerivative(neuron.Output);
                 }
             }
             else

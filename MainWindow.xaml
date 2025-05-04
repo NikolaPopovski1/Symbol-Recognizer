@@ -15,6 +15,10 @@
             </WrapPanel>
             <Button Name="ButtonClearCanvas" Content="Clear canvas" HorizontalAlignment="Center" Width="150" Margin="0 0 0 30" Click="ButtonClearCanvas_Click"/>
             <Button Name="ButtonStartLearning" Content="Start learning" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10" Click="ButtonStartLearning_Click"/>
+            <WrapPanel HorizontalAlignment="Center" Margin="0 0 0 10">
+                <TextBox Name="TextBoxLearningRate" VerticalAlignment="Center" TextWrapping="Wrap" Text="" Width="47" Margin="0 0 10 0" TextChanged="TextBoxLearningRate_TextChanged" />
+                <Button Name="ButtonSaveLearningRate" Content="Set LR" Width="93" Click="ButtonSaveLearningRate_Click" />
+            </WrapPanel>
             <Button Name="ButtonStopLearning" Content="Stop learning"  HorizontalAlignment="Center" Width="150" Margin="0 0 0 30" Click="ButtonStopLearning_Click" />
             <Button Name="ButtonRecogniseSymbol" Content="Recognise symbol" HorizontalAlignment="Center" Width="150" Margin="0 0 0 10" Click="ButtonRecogniseSymbol_Click"/>
         </StackPanel>
